@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+require 'telemetry/snmp'
+Telemetry::Snmp.bootstrap
+
+trap('SIGTERM') { @quit = true }
+trap('SIGHUP') { @quit = true }
+trap('SIGINT') { @quit = true }
+
+@quit = false
+until @quit
+  @lines = []
+  Telemetry::Snmp::Data::Model::Device.each do |row|
+    next if row.values[:last_polled].to_i + row.values[:frequency] > Time.now.to_i
+
+    fields = {}
+    tags = {
+      hostname: row.values[:hostname],
+      ip_address: row.values[:ip_address],
+      env: row.values[:environment],
+      dc: row.values[:datacenter],
+      zone: row.values[:zone],
+      influxdb_node_group: 'snmp'
+    }
+
+    Telemetry::Snmp::Data::Model::OID.each do |oid_row|
+      oid_value = Telemetry::Snmp::Client.oid_value(row[:hostname], oid_row.values[:oid])
+      next if oid_value.nil?
+      next unless oid_value.is_a?(Integer) || oid_value.is_a?(Float)
+
+      fields[oid_row.values[:name]] = "#{Telemetry::Snmp::Client.oid_value(row[:hostname], oid_row.values[:oid])}i"
+    rescue StandardError => e
+      Telemetry::Logger.error "#{e.class}: #{e.message}"
+    end
+
+    @lines.push Telemetry::Metrics::Parser.to_line_protocol(
+      measurement: 'palo_alto_a',
+      fields: fields,
+      tags: tags,
+      timestamp: (DateTime.now.strftime('%Q').to_i * 1000 * 1000)
+    )
+
+    walker = Telemetry::Snmp::Client.grab_oid_metrics(row.values[:hostname])
+    Telemetry::Logger.info "Pushing #{walker.count} lines for #{row.values[:hostname]}" unless walker.empty?
+    Telemetry::Snmp::Publisher.push_lines(walker) unless walker.empty?
+
+    row.update(last_polled: Sequel::CURRENT_TIMESTAMP)
+    row.save
+  rescue StandardError => e
+    Telemetry::Logger.error "#{e.class}: #{e.message}"
+  end
+
+  Telemetry::Snmp::Publisher.push_lines(@lines) unless @lines.empty?
+  sleep(1)
+end

@@ -1,31 +1,54 @@
-# Welcome to your new OSS project
+# Telemetry::Snmp
 
-This project currently has the base documentation files required.  Replace this
-file with your own README.md.
+### Telemetry::Snmp Collector Service
+This is a servce that runs and collects SNMP metrics at whatever frequency is defined inside the basement. As you need
+additional collectors, you can scale this out to give you more parallel workers
 
-## Files included
+You can start this service by running
+```ruby
+bundle update
+bundle exec exe/snmp_collector
+```
 
-**CODE_OF_CONDUCT.md**
 
-Use without changes
+### Telemetry::Snmp::API
+The API allows for you to remotely CRUD devices, oids, users, device credentials, etc  
+The Routes are available via a [postman json](https://github.com/Optum/telemetry-snmp/blob/main/telemetry-snmp.json)  
 
-**INDIVIDUAL_CONTRIBUTOR_LICENSE.md**
+## OID Mappings
+The oid_walks table is the most utilized and probably what you are looking for. 
+Table Layout
+```json
+{
+  "oid": "the oid you want to grab metrics from(walk)",
+  "oid_index": "the oid to use as an index for naming",
+  "measurement_name": "what name to name the measurement",
+  "active": 1
+}
+```
 
-Use without changes
 
-**CONTRIBUTING.md**
+## Settings
+Telemetry::Snmp::Publisher
+```ruby
+ENV['telemetry.snmp.amqp.username'] = 'guest'
+ENV['telemetry.snmp.amqp.password'] = 'guest'
+ENV['telemetry.snmp.amqp.nodes'] = 'localhost'
+ENV['telemetry.snmp.amqp.vhost'] = 'telemetry'
+ENV['telemetry.snmp.amqp.port'] = '5672'
+ENV['telemetry.snmp.amqp.use_ssl'] = 'false'
+ENV['telemetry.snmp.amqp.exchange_name'] = 'telemetry.snmp'
+```
 
-This file has some portions that are required and others that can be customized.
-Customize the Coding Standards section to mention the languages used by your project.
-Feel free to add any rules and requirements that you would like people to follow
-when contributing to your project.
-
-**NOTICE.txt**
-
-This file is needed if your project is licensed under the Apache 2.0 license.  
-If you are using this license, fill it out according to the prompts.  Otherwise,
-delete this file.
-
-## Additional Repo Updates
-
-Make sure that you have a project description and appropriate repository topics.
+Telemetry::Snmp::Data
+```ruby
+ENV['telemetry.snmp.data.adapter'] = 'mysql2'
+ENV['telemetry.snmp.data.username'] = 'root'
+ENV['telemetry.snmp.data.password'] = ''
+ENV['telemetry.snmp.data.database'] = 'telemetry_snmp'
+ENV['telemetry.snmp.data.host'] = '127.0.0.1'
+ENV['telemetry.snmp.data.port'] = '3306'
+ENV['telemetry.snmp.data.max_connections'] = '16'
+ENV['telemetry.snmp.data.pool_timeout'] = '2'
+ENV['telemetry.snmp.data.preconnect'] = 'concurrently'
+```
