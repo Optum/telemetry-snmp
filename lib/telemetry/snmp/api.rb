@@ -62,6 +62,10 @@ module Telemetry
         Telemetry::Snmp::Collector.loop_devices
       end
 
+      get '/poll_next_device' do
+        Telemetry::Snmp::Collector.poll_next_device
+      end
+
       namespace('/users') { register Telemetry::Snmp::Controller::Users }
       namespace('/devices/creds') { register Telemetry::Snmp::Controller::DeviceCreds }
       namespace('/devices') { register Telemetry::Snmp::Controller::Devices }

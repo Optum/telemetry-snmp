@@ -15,6 +15,19 @@ module Telemetry
           end
         end
 
+        def poll_next_device
+          Telemetry::Snmp::Data::Model::Device.where(:active).each do |row|
+            next if row.values[:last_polled].to_i + row.values[:frequency] > Time.now.to_i
+            next if device_locked?(row.values[:id])
+
+            Telemetry::Logger.info "Grabbing metrics for #{row.values[:hostname]}"
+            collect(row.values[:id])
+            break
+          rescue StandardError => e
+            Telemetry::Logger.exception(e, level: 'error')
+          end
+        end
+
         def unlock_expired_devices
           Telemetry::Snmp::Data::Model::DeviceLock.each do |row|
             next if row.values[:expires] < Sequel::CURRENT_TIMESTAMP
