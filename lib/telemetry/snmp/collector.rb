@@ -7,7 +7,7 @@ module Telemetry
         end
 
         def loop_devices
-          Telemetry::Snmp::Data::Model::Device.where(:active).each do |row|
+          Telemetry::Snmp::Data::Model::Device.where(:active).order(:last_polled).each do |row|
             next if row.values[:last_polled].to_i + row.values[:frequency] > Time.now.to_i
             next if device_locked?(row.values[:id])
 
@@ -16,7 +16,7 @@ module Telemetry
         end
 
         def poll_next_device
-          Telemetry::Snmp::Data::Model::Device.where(:active).each do |row|
+          Telemetry::Snmp::Data::Model::Device.where(:active).order(:last_polled).each do |row|
             next if row.values[:last_polled].to_i + row.values[:frequency] > Time.now.to_i
             next if device_locked?(row.values[:id])
 
@@ -37,7 +37,7 @@ module Telemetry
         end
 
         def device_locked?(device_id)
-          !Telemetry::Snmp::Data::Model::DeviceLock[device_id: device_id].nil?
+          Telemetry::Snmp::Data::Model::DeviceLock.where(device_id: device_id).count.positive?
         end
 
         def lock_device(device_id)
