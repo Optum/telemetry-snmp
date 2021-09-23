@@ -4,6 +4,7 @@ module Telemetry
       module Model
         class Device < Sequel::Model
           many_to_one :device_cred
+          many_to_one :device_lock
         end
       end
     end

@@ -37,11 +37,29 @@ module Telemetry
         response.body = Oj.dump(response.body, mode: :compat) unless response.body.is_a? String
       end
 
+      get '/' do
+        {
+          version: Telemetry::Snmp::VERSION,
+          migration_version: Telemetry::Snmp::Data.migration_version
+        }
+      end
+
+      get '' do
+        {
+          version: Telemetry::Snmp::VERSION,
+          migration_version: Telemetry::Snmp::Data.migration_version
+        }
+      end
+
       get '/version' do
         {
           version: Telemetry::Snmp::VERSION,
           migration_version: Telemetry::Snmp::Data.migration_version
         }
+      end
+
+      get '/loop_devices' do
+        Telemetry::Snmp::Collector.loop_devices
       end
 
       namespace('/users') { register Telemetry::Snmp::Controller::Users }

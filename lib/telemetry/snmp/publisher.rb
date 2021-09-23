@@ -21,8 +21,8 @@ module Telemetry
         end
 
         def username
-          if ENV.key? 'telemetry.snmp.amqp.username'
-            ENV['telemetry.snmp.amqp.username']
+          if ENV.key? 'telemetry_snmp_amqp_username'
+            ENV['telemetry_snmp_amqp_username']
           elsif opts[:amqp].key? :username
             opts[:amqp][:username]
           else
@@ -31,16 +31,16 @@ module Telemetry
         end
 
         def password
-          ENV['telemetry.snmp.amqp.password'] || opts[:amqp][:password] || 'guest'
+          ENV['telemetry_snmp_amqp_password'] || opts[:amqp][:password] || 'guest'
         end
 
         def vhost
-          ENV['telemetry.snmp.amqp.vhost'] || opts[:amqp][:vhost] || 'telemetry'
+          ENV['telemetry_snmp_amqp_vhost'] || opts[:amqp][:vhost] || 'telemetry'
         end
 
         def port
-          if ENV.key? 'telemetry.snmp.amqp.port'
-            ENV['telemetry.snmp.amqp.port'].to_i
+          if ENV.key? 'telemetry_snmp_amqp_port'
+            ENV['telemetry_snmp_amqp_port'].to_i
           elsif opts[:amqp].key? :port
             opts[:amqp][:port]
           elsif use_ssl?
@@ -51,8 +51,8 @@ module Telemetry
         end
 
         def use_ssl?
-          if ENV.key? 'telemetry.snmp.amqp.use_ssl'
-            %w[1 true].include? ENV['telemetry.snmp.amqp.use_ssl']
+          if ENV.key? 'telemetry_snmp_amqp_use_ssl'
+            %w[1 true].include? ENV['telemetry_snmp_amqp_use_ssl']
           elsif opts[:amqp].key?(:use_ssl)
             opts[:amqp][:use_ssl]
           else
@@ -61,8 +61,8 @@ module Telemetry
         end
 
         def nodes
-          if ENV.key?('telemetry.snmp.amqp.nodes')
-            ENV['telemetry.snmp.amqp.nodes'].split(',')
+          if ENV.key?('telemetry_snmp_amqp_nodes')
+            ENV['telemetry_snmp_amqp_nodes'].split(',')
           elsif opts[:amqp].key?(:nodes)
             opts[:amqp][:nodes]
           else
@@ -71,7 +71,7 @@ module Telemetry
         end
 
         def exchange_name
-          ENV['telemetry.snmp.amqp.exchange_name'] || opts[:amqp][:exchange_name] || 'telemetry.snmp'
+          ENV['telemetry_snmp_amqp_exchange_name'] || opts[:amqp][:exchange_name] || 'telemetry.snmp'
         end
 
         def session

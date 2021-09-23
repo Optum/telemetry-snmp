@@ -9,8 +9,10 @@ trap('SIGINT') { @quit = true }
 
 @quit = false
 until @quit
+  sleep(1)
   @lines = []
-  Telemetry::Snmp::Data::Model::Device.each do |row|
+  Telemetry::Snmp::Data::Model::Device.where(:active).each do |row|
+    break if @quit
     next if row.values[:last_polled].to_i + row.values[:frequency] > Time.now.to_i
 
     fields = {}
@@ -20,10 +22,13 @@ until @quit
       env: row.values[:environment],
       dc: row.values[:datacenter],
       zone: row.values[:zone],
-      influxdb_node_group: 'snmp'
+      influxdb_node_group: 'snmp',
+      influxdb_database: 'snmp'
     }
 
     Telemetry::Snmp::Data::Model::OID.each do |oid_row|
+      break if @quit
+
       oid_value = Telemetry::Snmp::Client.oid_value(row[:hostname], oid_row.values[:oid])
       next if oid_value.nil?
       next unless oid_value.is_a?(Integer) || oid_value.is_a?(Float)
@@ -34,7 +39,7 @@ until @quit
     end
 
     @lines.push Telemetry::Metrics::Parser.to_line_protocol(
-      measurement: 'palo_alto_a',
+      measurement: 'palo_alto',
       fields: fields,
       tags: tags,
       timestamp: (DateTime.now.strftime('%Q').to_i * 1000 * 1000)
@@ -48,6 +53,7 @@ until @quit
     row.save
   rescue StandardError => e
     Telemetry::Logger.error "#{e.class}: #{e.message}"
+    Telemetry::Logger.error e.backtrace[0..20]
   end
 
   Telemetry::Snmp::Publisher.push_lines(@lines) unless @lines.empty?

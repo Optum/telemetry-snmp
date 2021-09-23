@@ -6,6 +6,7 @@ require 'telemetry/metrics/parser'
 require 'telemetry/snmp/data'
 require 'telemetry/snmp/client'
 require 'telemetry/snmp/publisher'
+require 'telemetry/snmp/collector'
 
 module Telemetry
   module Snmp

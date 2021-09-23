@@ -12,48 +12,48 @@ RSpec.describe Telemetry::Snmp::Publisher do
 
   it 'should have a username' do
     expect(described_class.username).to eq 'guest'
-    ENV['telemetry.snmp.amqp.username'] = 'foobar'
+    ENV['telemetry_snmp_amqp_username'] = 'foobar'
     expect(described_class.username).to eq 'foobar'
-    ENV['telemetry.snmp.amqp.username'] = nil
+    ENV['telemetry_snmp_amqp_username'] = nil
   end
 
   it 'should have a password' do
     expect(described_class.password).to eq 'guest'
-    ENV['telemetry.snmp.amqp.password'] = 'foobar'
+    ENV['telemetry_snmp_amqp_password'] = 'foobar'
     expect(described_class.password).to eq 'foobar'
-    ENV['telemetry.snmp.amqp.password'] = nil
+    ENV['telemetry_snmp_amqp_password'] = nil
     expect(described_class.password).to eq 'guest'
   end
 
   it 'should have a vhost' do
     expect(described_class.vhost).to eq 'telemetry'
-    ENV['telemetry.snmp.amqp.vhost'] = 'foobar'
+    ENV['telemetry_snmp_amqp_vhost'] = 'foobar'
     expect(described_class.vhost).to eq 'foobar'
-    ENV['telemetry.snmp.amqp.vhost'] = nil
+    ENV['telemetry_snmp_amqp_vhost'] = nil
     expect(described_class.vhost).to eq 'telemetry'
   end
 
   it 'should have a port' do
     expect(described_class.port).to eq 5672
-    ENV['telemetry.snmp.amqp.port'] = '8811'
+    ENV['telemetry_snmp_amqp_port'] = '8811'
     expect(described_class.port).to eq 8811
-    ENV['telemetry.snmp.amqp.port'] = nil
+    ENV['telemetry_snmp_amqp_port'] = nil
     expect(described_class.port).to eq 5672
   end
 
   it 'should have nodes' do
     expect(described_class.nodes).to be_a Array
     expect(described_class.nodes).to eq ['localhost']
-    ENV['telemetry.snmp.amqp.nodes'] = 'foo,bar'
+    ENV['telemetry_snmp_amqp_nodes'] = 'foo,bar'
     expect(described_class.nodes).to eq %w[foo bar]
-    ENV['telemetry.snmp.amqp.nodes'] = nil
+    ENV['telemetry_snmp_amqp_nodes'] = nil
   end
 
   it 'should have an exchange name' do
     expect(described_class.exchange_name).to eq 'telemetry.snmp'
-    ENV['telemetry.snmp.amqp.exchange_name'] = 'test_exchange'
-    expect(described_class.exchange_name).to eq 'test_exchange'
-    ENV['telemetry.snmp.amqp.exchange_name'] = nil
+    ENV['telemetry_snmp_amqp_exchange_name'] = 'test.exchange'
+    expect(described_class.exchange_name).to eq 'test.exchange'
+    ENV['telemetry_snmp_amqp_exchange_name'] = nil
   end
 
   it 'should have publlish_opts' do
@@ -74,15 +74,15 @@ RSpec.describe Telemetry::Snmp::Publisher do
 
   it 'should support use_ssl' do
     expect(described_class.use_ssl?).to eq false
-    ENV['telemetry.snmp.amqp.use_ssl'] = 'true'
+    ENV['telemetry_snmp_amqp_use_ssl'] = 'true'
     expect(described_class.use_ssl?).to eq true
-    ENV['telemetry.snmp.amqp.use_ssl'] = 'foobar'
+    ENV['telemetry_snmp_amqp_use_ssl'] = 'foobar'
     expect(described_class.use_ssl?).to eq false
-    ENV['telemetry.snmp.amqp.use_ssl'] = '1'
+    ENV['telemetry_snmp_amqp_use_ssl'] = '1'
     expect(described_class.use_ssl?).to eq true
-    ENV['telemetry.snmp.amqp.use_ssl'] = '0'
+    ENV['telemetry_snmp_amqp_use_ssl'] = '0'
     expect(described_class.use_ssl?).to eq false
-    ENV['telemetry.snmp.amqp.use_ssl'] = nil
+    ENV['telemetry_snmp_amqp_use_ssl'] = nil
     expect(described_class.use_ssl?).to eq false
   end
 
@@ -93,7 +93,7 @@ RSpec.describe Telemetry::Snmp::Publisher do
   it 'should be able to start! with options' do
     opts = {
       amqp: {
-        vhost: 'telegraf',
+        vhost: '/',
         nodes: ['localhost', '127.0.0.1'],
         exchange_name: 'telemetry.snmp',
         port: 5672,

@@ -10,6 +10,5 @@ require 'multi_json'
 
 require 'telemetry/snmp'
 require 'telemetry/snmp/api'
-
-Telemetry::Snmp::Data.start!
+Telemetry::Snmp.bootstrap
 run Telemetry::Snmp::API

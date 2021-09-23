@@ -38,7 +38,7 @@ module Telemetry
         end
 
         def models
-          %w[user device_cred device oid oid_group oid_oid_groups oid_walk user_audit_log]
+          %w[user device_cred device device_lock oid oid_group oid_oid_groups oid_walk user_audit_log]
         end
 
         def connection(**opts)
