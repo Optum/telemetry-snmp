@@ -1,5 +1,8 @@
 # Telemetry::SNMP
 
+## [0.2.1]
+Updating logic so it updates the last_polled column at the beginning of the loop
+
 ## [0.2.0]
 * Fixing ENV variables to not use .
 * Adding new device lock table for future reference

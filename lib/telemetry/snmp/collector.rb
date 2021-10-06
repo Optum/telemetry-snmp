@@ -61,8 +61,11 @@ module Telemetry
         end
 
         def collect(device_id)
-          lock_device(device_id)
+          return false unless lock_device(device_id)
+
           row = Telemetry::Snmp::Data::Model::Device[device_id]
+          row.update(last_polled: Sequel::CURRENT_TIMESTAMP)
+          row.save
           lines = []
           fields = {}
           tags = {
