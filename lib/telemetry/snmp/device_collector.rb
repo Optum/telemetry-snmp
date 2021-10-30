@@ -48,8 +48,7 @@ module Telemetry
             next
           end
 
-          @fields[oid_row.values[:name]] =
-            "#{oid_value}i"
+          @fields[oid_row.values[:name]] = "#{oid_value}i"
         rescue StandardError => e
           Telemetry::Logger.error "#{e.class}: #{e.message}"
         end
@@ -124,7 +123,7 @@ module Telemetry
             }
 
             line = Telemetry::Metrics::Parser.to_line_protocol(
-              measurement: row.values[:measurement_name],
+              measurement: "snmp_#{row.values[:measurement_name]}",
               fields: fields,
               tags: tags,
               timestamp: timestamp
