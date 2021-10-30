@@ -21,10 +21,10 @@ module Telemetry
         def connection(host)
           return @connections[host.to_sym] if @connections.key? host.to_sym
 
-          dataset = Telemetry::Snmp::Data::Model::Device[hostname: host]
+          dataset = Telemetry::Snmp::Data::Model::Device.where(hostname: host).or(ip_address: host).first
 
           @connections[host.to_sym] = NETSNMP::Client.new(
-            host: dataset.values[:ip_address],
+            host: dataset.values[:hostname],
             port: dataset.values[:port],
             username: dataset.device_cred.values[:username],
             auth_password: dataset.device_cred.values[:auth_password],
@@ -59,7 +59,7 @@ module Telemetry
         end
 
         def grab_oid_metrics(hostname)
-          device = Telemetry::Snmp::Data::Model::Device[hostname: hostname]
+          device = Telemetry::Snmp::Data::Model::Device.where(hostname: hostname).or(ip_address: hostname).first
           @lines = []
           Telemetry::Snmp::Data::Model::OIDWalks.where(:active).each do |row|
             index = {}
@@ -94,6 +94,8 @@ module Telemetry
 
               @lines.push line
             end
+          rescue StandardError => e
+            Telemetry::Logger.error "#{e.class}: #{hostname}, #{e.message}"
           end
 
           @lines
