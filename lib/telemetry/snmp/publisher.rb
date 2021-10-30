@@ -118,7 +118,7 @@ module Telemetry
             routing_key: 'snmp',
             persistent: true,
             mandatory: false,
-            timstamp: Time.now.to_i,
+            timestamp: Time.now.to_i,
             type: 'metric',
             content_type: 'application/json',
             content_encoding: 'identity'
